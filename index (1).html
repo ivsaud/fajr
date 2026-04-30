@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فجر | منصة التقييم</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1a1a2e;
+            --secondary: #16213e;
+            --accent: #c9a227;
+            --accent-light: #e8d5a3;
+            --text: #f5f5f5;
+            --text-muted: #a0a0a0;
+            --glass: rgba(255,255,255,0.05);
+            --glass-border: rgba(255,255,255,0.1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
+            color: var(--text); min-height: 100vh; overflow-x: hidden; position: relative;
+        }
+        .bg-animation { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; overflow: hidden; pointer-events: none; }
+        .bg-animation .orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.15; animation: float 20s infinite ease-in-out; }
+        .orb-1 { width: 400px; height: 400px; background: var(--accent); top: -100px; right: -100px; }
+        .orb-2 { width: 300px; height: 300px; background: #4a4a8a; bottom: -50px; left: -50px; animation-delay: -7s; }
+        .orb-3 { width: 250px; height: 250px; background: var(--accent); top: 50%; left: 50%; animation-delay: -14s; }
+        @keyframes float { 0%,100% { transform: translate(0,0) scale(1); } 33% { transform: translate(30px,-30px) scale(1.1); } 66% { transform: translate(-20px,20px) scale(0.9); } }
+        .particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+        .particle { position: absolute; width: 3px; height: 3px; background: var(--accent); border-radius: 50%; opacity: 0.3; animation: particle-float 15s infinite; }
+        @keyframes particle-float { 0% { transform: translateY(100vh) rotate(0deg); opacity: 0; } 10% { opacity: 0.3; } 90% { opacity: 0.3; } 100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; } }
+        .container { position: relative; z-index: 10; max-width: 900px; margin: 0 auto; padding: 20px; min-height: 100vh; display: flex; flex-direction: column; }
+        .logo-section { text-align: center; padding: 40px 0 20px; position: relative; }
+        .logo-container { display: inline-block; position: relative; cursor: pointer; transition: transform 0.3s ease; }
+        .logo-container:hover { transform: scale(1.05); }
+        .logo-ring { width: 120px; height: 120px; border: 2px solid var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; position: relative; animation: logo-pulse 3s infinite ease-in-out; }
+        .logo-ring::before { content: ''; position: absolute; inset: -10px; border: 1px solid rgba(201,162,39,0.3); border-radius: 50%; animation: logo-spin 10s linear infinite; }
+        @keyframes logo-pulse { 0%,100% { box-shadow: 0 0 20px rgba(201,162,39,0.2); } 50% { box-shadow: 0 0 40px rgba(201,162,39,0.4); } }
+        @keyframes logo-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .logo-text { font-size: 2.5rem; font-weight: 900; color: var(--accent); letter-spacing: 2px; }
+        .logo-edit { position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); background: var(--glass); border: 1px solid var(--glass-border); border-radius: 20px; padding: 4px 12px; font-size: 0.7rem; color: var(--text-muted); cursor: pointer; opacity: 0; transition: all 0.3s ease; backdrop-filter: blur(10px); }
+        .logo-container:hover .logo-edit { opacity: 1; }
+        .section { display: none; }
+        .section.active { display: block; animation: fadeInUp 0.8s ease forwards; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+        .glass-card { background: var(--glass); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 24px; padding: 40px; margin: 20px 0; position: relative; overflow: hidden; transition: all 0.4s ease; }
+        .glass-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--accent), transparent); opacity: 0.5; }
+        .glass-card:hover { border-color: rgba(201,162,39,0.3); transform: translateY(-2px); box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .main-title { font-size: 2.5rem; font-weight: 700; text-align: center; margin-bottom: 10px; background: linear-gradient(135deg, var(--text) 0%, var(--accent-light) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .subtitle { text-align: center; color: var(--text-muted); font-size: 1.1rem; margin-bottom: 30px; }
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 16px 40px; border: none; border-radius: 16px; font-family: inherit; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden; text-decoration: none; }
+        .btn-primary { background: linear-gradient(135deg, var(--accent) 0%, #b8941f 100%); color: var(--primary); box-shadow: 0 4px 20px rgba(201,162,39,0.3); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(201,162,39,0.4); }
+        .btn-primary::after { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); transition: left 0.5s ease; }
+        .btn-primary:hover::after { left: 100%; }
+        .btn-secondary { background: var(--glass); border: 1px solid var(--glass-border); color: var(--text); }
+        .btn-secondary:hover { background: rgba(255,255,255,0.1); border-color: var(--accent); }
+        .btn-group { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-top: 30px; }
+        .form-group { margin-bottom: 25px; position: relative; }
+        .form-label { display: block; margin-bottom: 10px; font-weight: 500; color: var(--accent-light); font-size: 0.95rem; }
+        .form-input { width: 100%; padding: 16px 20px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 16px; color: var(--text); font-family: inherit; font-size: 1rem; transition: all 0.3s ease; outline: none; }
+        .form-input:focus { border-color: var(--accent); background: rgba(255,255,255,0.08); box-shadow: 0 0 20px rgba(201,162,39,0.1); }
+        .form-input::placeholder { color: var(--text-muted); }
+        .question-card { background: var(--glass); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 20px; padding: 30px; margin-bottom: 20px; transition: all 0.4s ease; opacity: 0; transform: translateX(50px); }
+        .question-card.visible { opacity: 1; transform: translateX(0); animation: slideIn 0.6s ease forwards; }
+        @keyframes slideIn { to { opacity: 1; transform: translateX(0); } }
+        .question-number { display: inline-flex; width: 36px; height: 36px; background: linear-gradient(135deg, var(--accent) 0%, #b8941f 100%); border-radius: 50%; align-items: center; justify-content: center; font-weight: 700; color: var(--primary); margin-bottom: 15px; font-size: 0.9rem; }
+        .question-text { font-size: 1.2rem; font-weight: 600; margin-bottom: 20px; line-height: 1.6; }
+        .options-grid { display: grid; gap: 12px; }
+        .option-item { padding: 16px 20px; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 14px; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; gap: 12px; }
+        .option-item:hover { background: rgba(255,255,255,0.08); border-color: var(--accent); transform: translateX(-5px); }
+        .option-item.selected { background: rgba(201,162,39,0.15); border-color: var(--accent); box-shadow: 0 0 20px rgba(201,162,39,0.1); }
+        .option-radio { width: 22px; height: 22px; border: 2px solid var(--text-muted); border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; flex-shrink: 0; }
+        .option-item.selected .option-radio { border-color: var(--accent); background: var(--accent); }
+        .option-item.selected .option-radio::after { content: '✓'; color: var(--primary); font-size: 0.8rem; font-weight: 700; }
+        .progress-container { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: rgba(255,255,255,0.05); z-index: 1000; }
+        .progress-bar { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-light)); transition: width 0.5s ease; box-shadow: 0 0 10px rgba(201,162,39,0.5); }
+        .success-container { text-align: center; padding: 60px 20px; }
+        .success-icon { width: 120px; height: 120px; margin: 0 auto 30px; position: relative; }
+        .success-circle { width: 100%; height: 100%; border: 3px solid var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; animation: success-scale 0.5s ease forwards; }
+        .success-circle::after { content: '✓'; font-size: 3rem; color: var(--accent); animation: success-check 0.5s ease 0.3s both; }
+        @keyframes success-scale { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes success-check { 0% { transform: scale(0); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+        .admin-panel { display: none; }
+        .admin-panel.active { display: block; }
+        .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 15px; }
+        .admin-title { font-size: 1.5rem; font-weight: 700; color: var(--accent); }
+        .response-card { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 16px; padding: 25px; margin-bottom: 20px; transition: all 0.3s ease; cursor: pointer; }
+        .response-card:hover { border-color: var(--accent); transform: translateY(-3px); }
+        .response-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
+        .response-name { font-size: 1.2rem; font-weight: 700; color: var(--accent-light); }
+        .response-meta { display: flex; gap: 15px; flex-wrap: wrap; }
+        .response-badge { padding: 4px 12px; background: rgba(201,162,39,0.15); border: 1px solid rgba(201,162,39,0.3); border-radius: 20px; font-size: 0.85rem; color: var(--accent-light); }
+        .response-answers { display: none; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--glass-border); }
+        .response-answers.show { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .answer-item { padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .answer-item:last-child { border-bottom: none; }
+        .answer-question { font-weight: 600; color: var(--accent-light); margin-bottom: 5px; font-size: 0.95rem; }
+        .answer-value { color: var(--text-muted); font-size: 0.9rem; }
+        .footer { margin-top: auto; padding: 30px 0; text-align: center; position: relative; }
+        .footer-line { width: 60px; height: 2px; background: linear-gradient(90deg, transparent, var(--accent), transparent); margin: 0 auto 20px; }
+        .footer-text { font-size: 0.9rem; color: var(--text-muted); letter-spacing: 3px; text-transform: uppercase; }
+        .footer-brand { font-weight: 700; color: var(--accent); font-size: 1.1rem; margin-top: 5px; display: inline-block; position: relative; }
+        .footer-brand::after { content: ''; position: absolute; bottom: -5px; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--accent), transparent); }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .modal-overlay.active { display: flex; animation: fadeIn 0.3s ease; }
+        .modal-content { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border: 1px solid var(--glass-border); border-radius: 24px; padding: 40px; max-width: 500px; width: 100%; position: relative; animation: modalSlide 0.4s ease; }
+        @keyframes modalSlide { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .modal-close { position: absolute; top: 15px; left: 15px; width: 36px; height: 36px; border-radius: 50%; background: var(--glass); border: 1px solid var(--glass-border); color: var(--text); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.2rem; transition: all 0.3s ease; }
+        .modal-close:hover { background: rgba(255,0,0,0.2); border-color: rgba(255,0,0,0.3); }
+        .modal-title { font-size: 1.3rem; font-weight: 700; margin-bottom: 20px; color: var(--accent); }
+        .image-preview { max-width: 100%; border-radius: 12px; margin-top: 15px; border: 1px solid var(--glass-border); }
+        .config-section { background: rgba(0,0,0,0.3); border-radius: 16px; padding: 20px; margin-bottom: 20px; }
+        .config-title { font-size: 1rem; font-weight: 600; color: var(--accent); margin-bottom: 15px; }
+        .question-config { background: var(--glass); border-radius: 12px; padding: 15px; margin-bottom: 15px; border: 1px solid var(--glass-border); }
+        .config-row { display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+        .config-input { flex: 1; min-width: 200px; padding: 10px 15px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 10px; color: var(--text); font-family: inherit; font-size: 0.9rem; outline: none; }
+        .config-input:focus { border-color: var(--accent); }
+        .config-select { padding: 10px 15px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 10px; color: var(--text); font-family: inherit; font-size: 0.9rem; outline: none; cursor: pointer; }
+        .config-select:focus { border-color: var(--accent); }
+        .options-config { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--glass-border); }
+        .option-config-input { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; }
+        .option-config-input input { flex: 1; padding: 8px 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 8px; color: var(--text); font-family: inherit; font-size: 0.85rem; outline: none; }
+        .option-config-input input:focus { border-color: var(--accent); }
+        .btn-small { padding: 8px 16px; font-size: 0.85rem; border-radius: 10px; }
+        .btn-danger { background: rgba(220,53,69,0.2); border: 1px solid rgba(220,53,69,0.3); color: #ff6b6b; }
+        .btn-danger:hover { background: rgba(220,53,69,0.3); }
+        @media (max-width: 600px) { .main-title { font-size: 1.8rem; } .glass-card { padding: 25px; } .btn { padding: 14px 30px; font-size: 1rem; } .logo-ring { width: 100px; height: 100px; } .logo-text { font-size: 2rem; } }
+        .file-input { display: none; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--primary); }
+        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent-light); }
+        .admin-access { position: fixed; bottom: 20px; left: 20px; z-index: 100; opacity: 0.3; transition: opacity 0.3s ease; }
+        .admin-access:hover { opacity: 1; }
+        .admin-btn { width: 40px; height: 40px; border-radius: 50%; background: var(--glass); border: 1px solid var(--glass-border); color: var(--text-muted); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.2rem; transition: all 0.3s ease; }
+        .admin-btn:hover { background: var(--accent); color: var(--primary); border-color: var(--accent); }
+        .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+        .empty-icon { font-size: 4rem; margin-bottom: 20px; opacity: 0.5; }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
+    <div class="particles" id="particles"></div>
+    <div class="progress-container"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+    <div class="container">
+        <div class="logo-section">
+            <div class="logo-container" onclick="openLogoModal()">
+                <div class="logo-ring"><span class="logo-text" id="logoText">فجر</span></div>
+                <div class="logo-edit">تعديل اللوقو</div>
+            </div>
+        </div>
+        <div class="section active" id="section-welcome">
+            <div class="glass-card">
+                <h1 class="main-title" id="welcomeTitle">مرحباً بك في منصة فجر</h1>
+                <p class="subtitle" id="welcomeSubtitle">نحن هنا لمساعدتك في تقييم مستواك بأسلوب احترافي ومميز</p>
+                <div style="text-align:center;margin:40px 0">
+                    <svg width="200" height="200" viewBox="0 0 200 200" style="max-width:100%">
+                        <defs><linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#c9a227;stop-opacity:1"/><stop offset="100%" style="stop-color:#e8d5a3;stop-opacity:1"/></linearGradient></defs>
+                        <circle cx="100" cy="100" r="80" fill="none" stroke="url(#grad1)" stroke-width="1" opacity="0.3"><animate attributeName="r" values="80;85;80" dur="4s" repeatCount="indefinite"/></circle>
+                        <circle cx="100" cy="100" r="60" fill="none" stroke="url(#grad1)" stroke-width="1" opacity="0.5"><animate attributeName="r" values="60;65;60" dur="3s" repeatCount="indefinite"/></circle>
+                        <path d="M100 40 L100 160 M40 100 L160 100" stroke="url(#grad1)" stroke-width="1" opacity="0.3"><animateTransform attributeName="transform" type="rotate" from="0 100 100" to="360 100 100" dur="20s" repeatCount="indefinite"/></path>
+                        <circle cx="100" cy="100" r="8" fill="url(#grad1)"><animate attributeName="opacity" values="0.5;1;0.5" dur="2s" repeatCount="indefinite"/></circle>
+                    </svg>
+                </div>
+                <div class="btn-group"><button class="btn btn-primary" onclick="goToForm()" type="button"><span>ابدأ الآن</span><span>←</span></button></div>
+            </div>
+        </div>
+        <div class="section" id="section-form">
+            <div class="glass-card">
+                <h2 class="main-title" style="font-size:1.8rem">معلوماتك</h2>
+                <p class="subtitle">أدخل بياناتك للمتابعة</p>
+                <form id="userForm" onsubmit="submitForm(event)">
+                    <div class="form-group"><label class="form-label">الاسم الكامل</label><input type="text" class="form-input" id="userName" placeholder="أدخل اسمك الكامل" required></div>
+                    <div class="form-group"><label class="form-label">الشعبة</label><input type="text" class="form-input" id="userClass" placeholder="مثال: شعبة 4" required></div>
+                    <div class="form-group"><label class="form-label">رقم الجوال</label><input type="tel" class="form-input" id="userPhone" placeholder="05xxxxxxxx" required pattern="05[0-9]{8}"></div>
+                    <div class="btn-group"><button type="button" class="btn btn-secondary" onclick="goToWelcome()">رجوع</button><button type="submit" class="btn btn-primary">المتابعة للأسئلة</button></div>
+                </form>
+            </div>
+        </div>
+        <div class="section" id="section-questions">
+            <div class="glass-card" style="padding:30px">
+                <h2 class="main-title" style="font-size:1.6rem;margin-bottom:5px">الأسئلة</h2>
+                <p class="subtitle" style="margin-bottom:25px">أجب على الأسئلة التالية بعناية</p>
+                <div id="questionsContainer"></div>
+                <div class="btn-group" style="margin-top:30px"><button type="button" class="btn btn-secondary" onclick="goToForm()">رجوع</button><button type="button" class="btn btn-primary" onclick="submitAnswers()" id="submitBtn">إنهاء وإرسال</button></div>
+            </div>
+        </div>
+        <div class="section" id="section-success">
+            <div class="glass-card">
+                <div class="success-container">
+                    <div class="success-icon"><div class="success-circle"></div></div>
+                    <h2 class="main-title">تم الإرسال بنجاح!</h2>
+                    <p class="subtitle">شكراً لمشاركتك. تم حفظ إجاباتك بنجاح.</p>
+                    <div style="margin-top:30px;padding:20px;background:rgba(201,162,39,0.1);border-radius:16px;border:1px solid rgba(201,162,39,0.2)">
+                        <p style="color:var(--accent-light);font-weight:600;margin-bottom:10px">ملخص إجاباتك:</p>
+                        <div id="summaryContent" style="text-align:right"></div>
+                    </div>
+                    <div class="btn-group" style="margin-top:30px"><button class="btn btn-primary" onclick="downloadResponse()">تحميل الإجابات كصورة</button><button class="btn btn-secondary" onclick="location.reload()">العودة للبداية</button></div>
+                </div>
+            </div>
+        </div>
+        <div class="section admin-panel" id="section-admin">
+            <div class="glass-card">
+                <div class="admin-header"><h2 class="admin-title">لوحة التحكم</h2><div class="btn-group" style="margin:0"><button type="button" class="btn btn-secondary btn-small" onclick="goToConfig()">⚙️ الإعدادات</button><button type="button" class="btn btn-secondary btn-small" onclick="exportData()">📥 تصدير</button><button type="button" class="btn btn-danger btn-small" onclick="clearAllData()">🗑️ مسح الكل</button></div></div>
+                <div id="responsesList"><div class="empty-state"><div class="empty-icon">📋</div><p>لا توجد إجابات مسجلة بعد</p></div></div>
+                <div class="btn-group" style="margin-top:30px"><button type="button" class="btn btn-secondary" onclick="goToWelcome()">العودة للرئيسية</button></div>
+            </div>
+        </div>
+        <div class="section" id="section-config">
+            <div class="glass-card">
+                <h2 class="main-title" style="font-size:1.6rem">إعدادات الأسئلة</h2>
+                <p class="subtitle">تخصيص الأسئلة والخيارات</p>
+                <div id="questionsConfig"></div>
+                <div class="btn-group" style="margin-top:30px"><button type="button" class="btn btn-secondary" onclick="goToAdmin()">رجوع</button><button type="button" class="btn btn-primary" onclick="saveConfig()">حفظ الإعدادات</button></div>
+            </div>
+        </div>
+        <div class="footer"><div class="footer-line"></div><p class="footer-text">صنع بإتقان</p><p class="footer-brand">فجر</p></div>
+    </div>
+    <div class="admin-access"><button type="button" class="admin-btn" onclick="showAdminLogin()" title="لوحة التحكم">⚙️</button></div>
+    <div class="modal-overlay" id="logoModal">
+        <div class="modal-content">
+            <button type="button" class="modal-close" onclick="closeLogoModal()">×</button>
+            <h3 class="modal-title">تعديل اللوقو</h3>
+            <div class="form-group"><label class="form-label">نص اللوقو</label><input type="text" class="form-input" id="logoTextInput" value="فجر"></div>
+            <div class="form-group"><label class="form-label">أو اختر صورة</label><input type="file" class="file-input" id="logoFile" accept="image/*" onchange="handleLogoFile(event)"><button type="button" class="btn btn-secondary" style="width:100%" onclick="document.getElementById('logoFile').click()">📁 اختيار صورة</button><img id="logoPreview" class="image-preview" style="display:none"></div>
+            <div class="btn-group" style="margin-top:20px"><button type="button" class="btn btn-primary" onclick="saveLogo()">حفظ</button></div>
+        </div>
+    </div>
+    <div class="modal-overlay" id="adminModal">
+        <div class="modal-content">
+            <button type="button" class="modal-close" onclick="closeAdminModal()">×</button>
+            <h3 class="modal-title">الدخول للوحة التحكم</h3>
+            <div class="form-group"><label class="form-label">كلمة المرور</label><input type="password" class="form-input" id="adminPassword" placeholder="أدخل كلمة المرور"></div>
+            <div class="btn-group" style="margin-top:20px"><button type="button" class="btn btn-primary" onclick="checkAdminPassword()">دخول</button></div>
+        </div>
+    </div>
+    <canvas id="responseCanvas" style="display:none"></canvas>
+<script>
+const ADMIN_PASSWORD = 'fajr2024';
+let questions = JSON.parse(localStorage.getItem('fajr_questions')) || [
+    {id:1,text:"ما هو مستوى خبرتك في المجال؟",type:"choice",options:["مبتدئ","متوسط","متقدم","خبير"]},
+    {id:2,text:"كم ساعة يومياً تخصص للتعلم؟",type:"choice",options:["أقل من ساعة","1-2 ساعات","3-4 ساعات","أكثر من 4 ساعات"]},
+    {id:3,text:"ما هي أهدافك المستقبلية؟",type:"text",options:[]},
+    {id:4,text:"هل تفضل العمل بشكل فردي أم ضمن فريق؟",type:"choice",options:["فردي","فريق","كلاهما"]},
+    {id:5,text:"ما هي نقاط قوتك الرئيسية؟",type:"text",options:[]},
+    {id:6,text:"كيف تتعامل مع الضغوطات؟",type:"choice",options:["أحافظ على هدوئي","أبحث عن دعم","أتعامل معها بمفردي","أحتاج وقت للتأقلم"]},
+    {id:7,text:"ما هي هواياتك المفضلة؟",type:"text",options:[]},
+    {id:8,text:"هل لديك خبرة سابقة في هذا المجال؟",type:"choice",options:["نعم، خبرة واسعة","نعم، خبرة بسيطة","لا، أنا مبتدئ"]},
+    {id:9,text:"ما هي توقعاتك من هذا البرنامج؟",type:"text",options:[]},
+    {id:10,text:"هل توصي الآخرين بهذا البرنامج؟",type:"choice",options:["بالتأكيد","ربما","غير متأكد","لا"]}
+];
+let currentUser = {};
+let currentAnswers = {};
+let logoImage = localStorage.getItem('fajr_logo_image') || null;
+let logoText = localStorage.getItem('fajr_logo_text') || 'فجر';
+
+document.addEventListener('DOMContentLoaded', function() {
+    createParticles();
+    loadLogo();
+    updateProgress(0);
+});
+
+function createParticles() {
+    const container = document.getElementById('particles');
+    for (let i = 0; i < 30; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        p.style.left = Math.random() * 100 + '%';
+        p.style.animationDelay = Math.random() * 15 + 's';
+        p.style.animationDuration = (10 + Math.random() * 10) + 's';
+        container.appendChild(p);
+    }
+}
+
+function loadLogo() {
+    const logoTextEl = document.getElementById('logoText');
+    const logoContainer = document.querySelector('.logo-ring');
+    if (logoImage) {
+        logoTextEl.style.display = 'none';
+        let img = logoContainer.querySelector('img');
+        if (!img) { img = document.createElement('img'); img.style.width = '80px'; img.style.height = '80px'; img.style.borderRadius = '50%'; img.style.objectFit = 'cover'; logoContainer.appendChild(img); }
+        img.src = logoImage; img.style.display = 'block';
+    } else {
+        logoTextEl.textContent = logoText; logoTextEl.style.display = 'block';
+        const img = logoContainer.querySelector('img');
+        if (img) img.style.display = 'none';
+    }
+}
+
+function showSection(sectionId) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById('section-' + sectionId).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function goToWelcome() { showSection('welcome'); updateProgress(0); }
+function goToForm() { showSection('form'); updateProgress(25); }
+function goToQuestions() { showSection('questions'); updateProgress(50); renderQuestions(); }
+function goToAdmin() { showSection('admin'); renderResponses(); updateProgress(0); }
+function goToConfig() { showSection('config'); renderConfig(); updateProgress(0); }
+function updateProgress(percent) { document.getElementById('progressBar').style.width = percent + '%'; }
+
+function submitForm(e) {
+    e.preventDefault();
+    currentUser = {
+        name: document.getElementById('userName').value.trim(),
+        class: document.getElementById('userClass').value.trim(),
+        phone: document.getElementById('userPhone').value.trim(),
+        date: new Date().toLocaleString('ar-SA'),
+        timestamp: Date.now()
+    };
+    goToQuestions();
+}
+
+function renderQuestions() {
+    const container = document.getElementById('questionsContainer');
+    container.innerHTML = '';
+    currentAnswers = {};
+    questions.forEach((q, index) => {
+        const card = document.createElement('div');
+        card.className = 'question-card';
+        card.style.animationDelay = (index * 0.1) + 's';
+        let optionsHtml = '';
+        if (q.type === 'choice' && q.options.length > 0) {
+            optionsHtml = '<div class="options-grid">' + q.options.map((opt) => {
+                const safeOpt = opt.replace(/'/g, "\'").replace(/"/g, '&quot;');
+                return '<div class="option-item" onclick="selectOption(' + q.id + ', '' + safeOpt + '', this)"><div class="option-radio"></div><span>' + opt + '</span></div>';
+            }).join('') + '</div>';
+        } else {
+            optionsHtml = '<textarea class="form-input" style="min-height:100px;resize:vertical" placeholder="اكتب إجابتك هنا..." onchange="saveTextAnswer(' + q.id + ', this.value)"></textarea>';
+        }
+        card.innerHTML = '<div class="question-number">' + (index + 1) + '</div><div class="question-text">' + q.text + '</div>' + optionsHtml;
+        container.appendChild(card);
+        setTimeout(() => card.classList.add('visible'), 100);
+    });
+}
+
+function selectOption(questionId, value, element) {
+    const parent = element.parentElement;
+    parent.querySelectorAll('.option-item').forEach(el => el.classList.remove('selected'));
+    element.classList.add('selected');
+    currentAnswers[questionId] = value;
+    element.style.transform = 'scale(1.02)';
+    setTimeout(() => element.style.transform = '', 200);
+}
+
+function saveTextAnswer(questionId, value) { currentAnswers[questionId] = value.trim(); }
+
+function submitAnswers() {
+    const unanswered = questions.filter(q => !currentAnswers[q.id] || currentAnswers[q.id].trim() === '');
+    if (unanswered.length > 0) {
+        alert('الرجاء الإجابة على جميع الأسئلة قبل الإرسال');
+        const firstUnanswered = document.querySelectorAll('.question-card')[questions.indexOf(unanswered[0])];
+        firstUnanswered.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        firstUnanswered.style.borderColor = 'rgba(220,53,69,0.5)';
+        setTimeout(() => firstUnanswered.style.borderColor = '', 2000);
+        return;
+    }
+    const response = { user: currentUser, answers: { ...currentAnswers }, questions: questions.map(q => ({ id: q.id, text: q.text })) };
+    const responses = JSON.parse(localStorage.getItem('fajr_responses') || '[]');
+    responses.push(response);
+    localStorage.setItem('fajr_responses', JSON.stringify(responses));
+    showSuccess(response);
+}
+
+function showSuccess(response) {
+    showSection('success');
+    updateProgress(100);
+    const summary = document.getElementById('summaryContent');
+    summary.innerHTML = '<p><strong style="color:var(--accent)">الاسم:</strong> ' + response.user.name + '</p>' +
+        '<p><strong style="color:var(--accent)">الشعبة:</strong> ' + response.user.class + '</p>' +
+        '<p><strong style="color:var(--accent)">الجوال:</strong> ' + response.user.phone + '</p>' +
+        '<p><strong style="color:var(--accent)">التاريخ:</strong> ' + response.user.date + '</p>' +
+        '<hr style="border-color:var(--glass-border);margin:15px 0">' +
+        '<p style="color:var(--text-muted)">عدد الأسئلة المجابة: ' + Object.keys(response.answers).length + '</p>';
+}
+
+function downloadResponse() {
+    const canvas = document.getElementById('responseCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = 800;
+    canvas.height = 1000 + (questions.length * 80);
+    const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+    gradient.addColorStop(0, '#1a1a2e'); gradient.addColorStop(0.5, '#16213e'); gradient.addColorStop(1, '#0f0f1a');
+    ctx.fillStyle = gradient; ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = 'rgba(201,162,39,0.3)'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(100, 100, 80, 0, Math.PI * 2); ctx.stroke();
+    ctx.beginPath(); ctx.arc(canvas.width - 100, canvas.height - 100, 60, 0, Math.PI * 2); ctx.stroke();
+    ctx.fillStyle = '#c9a227'; ctx.font = 'bold 48px Arial'; ctx.textAlign = 'center';
+    ctx.fillText(logoText, canvas.width / 2, 120);
+    ctx.fillStyle = '#e8d5a3'; ctx.font = '24px Arial';
+    ctx.fillText('شهادة إكمال التقييم', canvas.width / 2, 170);
+    ctx.strokeStyle = 'rgba(201,162,39,0.5)'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(200, 200); ctx.lineTo(canvas.width - 200, 200); ctx.stroke();
+    let y = 260;
+    ctx.textAlign = 'right'; ctx.fillStyle = '#f5f5f5'; ctx.font = 'bold 28px Arial';
+    ctx.fillText('الاسم: ' + currentUser.name, canvas.width - 80, y); y += 50;
+    ctx.fillText('الشعبة: ' + currentUser.class, canvas.width - 80, y); y += 50;
+    ctx.fillText('رقم الجوال: ' + currentUser.phone, canvas.width - 80, y); y += 50;
+    ctx.fillText('التاريخ: ' + currentUser.date, canvas.width - 80, y); y += 60;
+    ctx.strokeStyle = 'rgba(201,162,39,0.3)'; ctx.beginPath(); ctx.moveTo(100, y); ctx.lineTo(canvas.width - 100, y); ctx.stroke(); y += 50;
+    ctx.fillStyle = '#c9a227'; ctx.font = 'bold 26px Arial';
+    ctx.fillText('الإجابات:', canvas.width - 80, y); y += 50;
+    questions.forEach((q, i) => {
+        const answer = currentAnswers[q.id] || 'لم يتم الإجابة';
+        ctx.fillStyle = '#e8d5a3'; ctx.font = 'bold 20px Arial';
+        ctx.fillText((i + 1) + '. ' + q.text, canvas.width - 80, y); y += 35;
+        ctx.fillStyle = '#a0a0a0'; ctx.font = '18px Arial';
+        const maxWidth = canvas.width - 160;
+        const words = answer.split(' ');
+        let line = '';
+        words.forEach(word => {
+            const testLine = line + word + ' ';
+            const metrics = ctx.measureText(testLine);
+            if (metrics.width > maxWidth && line !== '') {
+                ctx.fillText(line, canvas.width - 80, y); line = word + ' '; y += 30;
+            } else { line = testLine; }
+        });
+        ctx.fillText(line, canvas.width - 80, y); y += 50;
+    });
+    y += 30;
+    ctx.fillStyle = 'rgba(201,162,39,0.5)'; ctx.font = '16px Arial'; ctx.textAlign = 'center';
+    ctx.fillText('صنع من فجر', canvas.width / 2, y);
+    const link = document.createElement('a');
+    link.download = 'إجابات_' + currentUser.name + '_' + Date.now() + '.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+}
+
+function showAdminLogin() { document.getElementById('adminModal').classList.add('active'); document.getElementById('adminPassword').value = ''; document.getElementById('adminPassword').focus(); }
+function closeAdminModal() { document.getElementById('adminModal').classList.remove('active'); }
+function checkAdminPassword() {
+    if (document.getElementById('adminPassword').value === ADMIN_PASSWORD) { closeAdminModal(); goToAdmin(); }
+    else { alert('كلمة المرور غير صحيحة'); }
+}
+
+function renderResponses() {
+    const responses = JSON.parse(localStorage.getItem('fajr_responses') || '[]');
+    const container = document.getElementById('responsesList');
+    if (responses.length === 0) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><p>لا توجد إجابات مسجلة بعد</p></div>';
+        return;
+    }
+    container.innerHTML = responses.map((resp, index) => {
+        const realIndex = responses.length - 1 - index;
+        return '<div class="response-card" onclick="toggleResponse(' + realIndex + ')">' +
+            '<div class="response-header"><div class="response-name">' + resp.user.name + '</div><div class="response-meta">' +
+            '<span class="response-badge">' + resp.user.class + '</span><span class="response-badge">' + resp.user.phone + '</span><span class="response-badge">' + resp.user.date + '</span></div></div>' +
+            '<div class="response-answers" id="response-' + realIndex + '">' +
+            resp.questions.map(q => '<div class="answer-item"><div class="answer-question">' + q.text + '</div><div class="answer-value">' + (resp.answers[q.id] || 'لم يتم الإجابة') + '</div></div>').join('') +
+            '<div style="margin-top:15px;text-align:center"><button type="button" class="btn btn-secondary btn-small" onclick="event.stopPropagation();downloadResponseImage(' + realIndex + ')">📥 تحميل كصورة</button>' +
+            '<button type="button" class="btn btn-danger btn-small" onclick="event.stopPropagation();deleteResponse(' + realIndex + ')">🗑️ حذف</button></div></div></div>';
+    }).join('');
+}
+
+function toggleResponse(index) { document.getElementById('response-' + index).classList.toggle('show'); }
+
+function deleteResponse(index) {
+    if (!confirm('هل أنت متأكد من حذف هذه الإجابة؟')) return;
+    const responses = JSON.parse(localStorage.getItem('fajr_responses') || '[]');
+    responses.splice(index, 1);
+    localStorage.setItem('fajr_responses', JSON.stringify(responses));
+    renderResponses();
+}
+
+function clearAllData() {
+    if (!confirm('هل أنت متأكد من حذف جميع الإجابات؟ لا يمكن التراجع!')) return;
+    localStorage.removeItem('fajr_responses');
+    renderResponses();
+}
+
+function exportData() {
+    const responses = JSON.parse(localStorage.getItem('fajr_responses') || '[]');
+    if (responses.length === 0) { alert('لا توجد بيانات للتصدير'); return; }
+    const blob = new Blob([JSON.stringify(responses, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url; link.download = 'fajr_responses_' + Date.now() + '.json';
+    link.click(); URL.revokeObjectURL(url);
+}
+
+function downloadResponseImage(index) {
+    const responses = JSON.parse(localStorage.getItem('fajr_responses') || '[]');
+    const resp = responses[index];
+    const canvas = document.getElementById('responseCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = 800; canvas.height = 300 + (resp.questions.length * 100);
+    const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+    gradient.addColorStop(0, '#1a1a2e'); gradient.addColorStop(1, '#16213e');
+    ctx.fillStyle = gradient; ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#c9a227'; ctx.font = 'bold 36px Arial'; ctx.textAlign = 'center';
+    ctx.fillText(logoText, canvas.width / 2, 60);
+    ctx.fillStyle = '#e8d5a3'; ctx.font = '20px Arial';
+    ctx.fillText('إجابات المشارك', canvas.width / 2, 100);
+    ctx.textAlign = 'right'; ctx.fillStyle = '#f5f5f5'; ctx.font = 'bold 22px Arial';
+    let y = 160;
+    ctx.fillText('الاسم: ' + resp.user.name, canvas.width - 50, y); y += 40;
+    ctx.fillText('الشعبة: ' + resp.user.class, canvas.width - 50, y); y += 40;
+    ctx.fillText('الجوال: ' + resp.user.phone, canvas.width - 50, y); y += 60;
+    resp.questions.forEach((q, i) => {
+        ctx.fillStyle = '#c9a227'; ctx.font = 'bold 18px Arial';
+        ctx.fillText((i + 1) + '. ' + q.text, canvas.width - 50, y); y += 30;
+        ctx.fillStyle = '#a0a0a0'; ctx.font = '16px Arial';
+        const answer = resp.answers[q.id] || 'لم يتم الإجابة';
+        const maxWidth = canvas.width - 100;
+        const words = answer.split(' ');
+        let line = '';
+        words.forEach(word => {
+            const testLine = line + word + ' ';
+            const metrics = ctx.measureText(testLine);
+            if (metrics.width > maxWidth && line !== '') {
+                ctx.fillText(line, canvas.width - 50, y); line = word + ' '; y += 25;
+            } else { line = testLine; }
+        });
+        ctx.fillText(line, canvas.width - 50, y); y += 40;
+    });
+    ctx.fillStyle = 'rgba(201,162,39,0.5)'; ctx.font = '14px Arial'; ctx.textAlign = 'center';
+    ctx.fillText('صنع من فجر', canvas.width / 2, y + 20);
+    const link = document.createElement('a');
+    link.download = 'إجابة_' + resp.user.name + '_' + Date.now() + '.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+}
+
+function renderConfig() {
+    const container = document.getElementById('questionsConfig');
+    container.innerHTML = '';
+    questions.forEach((q, index) => {
+        const div = document.createElement('div');
+        div.className = 'question-config';
+        div.id = 'config-q-' + index;
+        let optionsHtml = '';
+        if (q.type === 'choice') {
+            optionsHtml = '<div class="options-config" id="options-' + index + '"><p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:10px">الخيارات:</p>' +
+                q.options.map((opt, i) => '<div class="option-config-input"><input type="text" value="' + opt + '" id="opt-' + index + '-' + i + '"><button type="button" class="btn btn-danger btn-small" onclick="removeOption(' + index + ',' + i + ')">✕</button></div>').join('') +
+                '<button type="button" class="btn btn-secondary btn-small" onclick="addOption(' + index + ')" style="margin-top:8px">+ إضافة خيار</button></div>';
+        }
+        div.innerHTML = '<div class="config-row"><input type="text" class="config-input" value="' + q.text + '" placeholder="نص السؤال" id="q-text-' + index + '"><select class="config-select" id="q-type-' + index + '" onchange="toggleOptions(' + index + ')"><option value="choice" ' + (q.type === 'choice' ? 'selected' : '') + '>خيارات</option><option value="text" ' + (q.type === 'text' ? 'selected' : '') + '>كتابي</option></select><button type="button" class="btn btn-danger btn-small" onclick="removeQuestion(' + index + ')">🗑️</button></div>' + optionsHtml;
+        container.appendChild(div);
+    });
+    const addBtn = document.createElement('div');
+    addBtn.style.textAlign = 'center';
+    addBtn.innerHTML = '<button type="button" class="btn btn-primary" onclick="addQuestion()" style="margin-top:10px">+ إضافة سؤال جديد</button>';
+    container.appendChild(addBtn);
+}
+
+function toggleOptions(index) {
+    const type = document.getElementById('q-type-' + index).value;
+    const configDiv = document.getElementById('config-q-' + index);
+    let optionsDiv = configDiv.querySelector('.options-config');
+    if (type === 'choice') {
+        if (!optionsDiv) {
+            optionsDiv = document.createElement('div');
+            optionsDiv.className = 'options-config';
+            optionsDiv.id = 'options-' + index;
+            optionsDiv.innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:10px">الخيارات:</p><button type="button" class="btn btn-secondary btn-small" onclick="addOption(' + index + ')" style="margin-top:8px">+ إضافة خيار</button>';
+            configDiv.appendChild(optionsDiv);
+        }
+    } else {
+        if (optionsDiv) optionsDiv.remove();
+    }
+}
+
+function addOption(qIndex) {
+    const optionsDiv = document.getElementById('options-' + qIndex);
+    const optionCount = optionsDiv.querySelectorAll('.option-config-input').length;
+    const div = document.createElement('div');
+    div.className = 'option-config-input';
+    div.innerHTML = '<input type="text" placeholder="خيار جديد" id="opt-' + qIndex + '-' + optionCount + '"><button type="button" class="btn btn-danger btn-small" onclick="this.parentElement.remove()">✕</button>';
+    const addBtn = optionsDiv.querySelector('button:last-child');
+    optionsDiv.insertBefore(div, addBtn);
+}
+
+function removeOption(qIndex, optIndex) {
+    const optionsDiv = document.getElementById('options-' + qIndex);
+    const inputs = optionsDiv.querySelectorAll('.option-config-input');
+    if (inputs[optIndex]) inputs[optIndex].remove();
+}
+
+function removeQuestion(index) {
+    if (!confirm('هل أنت متأكد من حذف هذا السؤال؟')) return;
+    questions.splice(index, 1);
+    renderConfig();
+}
+
+function addQuestion() {
+    const newId = questions.length > 0 ? Math.max(...questions.map(q => q.id)) + 1 : 1;
+    questions.push({ id: newId, text: 'سؤال جديد', type: 'choice', options: ['خيار 1', 'خيار 2'] });
+    renderConfig();
+}
+
+function saveConfig() {
+    const newQuestions = [];
+    questions.forEach((q, index) => {
+        const text = document.getElementById('q-text-' + index).value.trim();
+        const type = document.getElementById('q-type-' + index).value;
+        let options = [];
+        if (type === 'choice') {
+            const optionsDiv = document.getElementById('options-' + index);
+            if (optionsDiv) {
+                optionsDiv.querySelectorAll('.option-config-input input').forEach(input => {
+                    if (input.value.trim()) options.push(input.value.trim());
+                });
+            }
+        }
+        newQuestions.push({ id: q.id, text: text || 'سؤال بدون نص', type: type, options: options });
+    });
+    questions = newQuestions;
+    localStorage.setItem('fajr_questions', JSON.stringify(questions));
+    alert('تم حفظ الإعدادات بنجاح!');
+    goToAdmin();
+}
+
+function openLogoModal() { document.getElementById('logoModal').classList.add('active'); document.getElementById('logoTextInput').value = logoText; }
+function closeLogoModal() { document.getElementById('logoModal').classList.remove('active'); }
+
+function handleLogoFile(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('logoPreview').src = e.target.result;
+            document.getElementById('logoPreview').style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+function saveLogo() {
+    const text = document.getElementById('logoTextInput').value.trim();
+    const preview = document.getElementById('logoPreview');
+    if (preview.style.display !== 'none' && preview.src) {
+        logoImage = preview.src;
+        localStorage.setItem('fajr_logo_image', logoImage);
+        localStorage.removeItem('fajr_logo_text');
+        logoText = '';
+    } else if (text) {
+        logoText = text;
+        localStorage.setItem('fajr_logo_text', logoText);
+        localStorage.removeItem('fajr_logo_image');
+        logoImage = null;
+    }
+    loadLogo();
+    closeLogoModal();
+}
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeLogoModal();
+        closeAdminModal();
+    }
+});
+
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', function(e) {
+        if (e.target === this) {
+            this.classList.remove('active');
+        }
+    });
+});
+</script>
+</body>
+</html>
